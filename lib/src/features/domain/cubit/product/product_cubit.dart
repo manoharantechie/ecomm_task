@@ -8,13 +8,15 @@ import 'package:e_comm/src/features/domain/cubit/product/product_state.dart';
 import 'package:e_comm/src/features/domain/db_service/db_services.dart';
 import 'package:http/http.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
-
+@injectable
 class ProductCubit extends Cubit<ProductState> {
+  final DatabaseService dbService;
   List<ProductListModel>? output;
   List<ProductDetails>? _productDetails;
 
-  ProductCubit() : super(ProductInit());
+  ProductCubit(this.dbService) : super(ProductInit());
 
 
   Future<void> getProductList() async {
@@ -93,16 +95,16 @@ class ProductCubit extends Cubit<ProductState> {
 
     );
 
-    await DatabaseService.instance.create(product);
+    await dbService.create(product);
   }
 
 
   Future<void> updateProduct(ProductDetails productDetails) async {
-    await DatabaseService.instance.update(product: productDetails);
+    await dbService.update(product: productDetails);
   }
 
   Future<void> fetchProducts() async {
-    final products = await DatabaseService.instance.readAllList();
+    final products = await dbService.readAllList();
 
     _productDetails!.addAll(products);
     emit(ProductDBListSucceed(response: _productDetails!));
@@ -110,12 +112,12 @@ class ProductCubit extends Cubit<ProductState> {
 
 
   Future<void> deleteProduct(int id) async {
-    await DatabaseService.instance.delete(id: id);
+    await dbService.delete(id: id);
     await fetchProducts(); // Refresh the list after deletion
   }
 
   Future<void> clearAllProducts() async {
-    await DatabaseService.instance.truncateTable('products');
+    await dbService.truncateTable('products');
   }
 
 

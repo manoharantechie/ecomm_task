@@ -1,8 +1,9 @@
 
-import 'package:e_comm/src/core/utills/init_setup.dart';
+import 'package:e_comm/src/core/di/di.dart';
 import 'package:e_comm/src/core/routes/route_config.dart';
 import 'package:e_comm/src/core/theme/custom_theme.dart';
 import 'package:e_comm/src/core/theme/themes.dart';
+import 'package:e_comm/src/features/domain/cubit/cart/cart_cubit.dart';
 import 'package:e_comm/src/features/domain/cubit/product/product_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,7 @@ import 'package:e_comm/src/core/localization/localizations.dart';
 final RouteObserver<PageRoute<dynamic>> routeObserver = RouteObserver<PageRoute<dynamic>>();
 
 void main() async {
-
+  configureDependencies();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
 
     statusBarColor: Color(0xFFFFFFFF),
@@ -22,7 +23,6 @@ void main() async {
     systemNavigationBarIconBrightness:
     Brightness.light, // color of navigation controls
   ));
-  injectionSetup();
 
   runApp(
     CustomTheme(
@@ -58,7 +58,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
     return  MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => ProductCubit()),
+          BlocProvider(create: (context) => getIt<ProductCubit>()),
+          BlocProvider(create: (context) => getIt<CartCubit>()),
         ],child:    MaterialApp.router(
         title: "E-Commerce",
         theme: CustomTheme.of(context),

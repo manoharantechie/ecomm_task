@@ -115,7 +115,7 @@ class ProductCard extends StatelessWidget {
               ),
               child: Text(
                 '${discount!.toStringAsFixed(0)}% Off',
-                style: const TextStyle(color: Colors.white, fontSize: 12),
+                style:  TextStyle(color: Theme.of(context).canvasColor, fontSize: 12),
               ),
             ),
           )

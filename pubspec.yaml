@@ -47,11 +47,14 @@ dependencies:
   path_provider:
   sqflite:
   connectivity_plus:
+  injectable:
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  injectable_generator:
   flutter_localizations:
     sdk: flutter
 

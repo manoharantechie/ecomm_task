@@ -5,57 +5,63 @@ class CartButton extends StatelessWidget {
   const CartButton({
     super.key,
     required this.price,
-    this.title = "Buy Now",
-    this.subTitle = "Unit price",
-    required this.press,
+    required this.quantity,
+    required this.onPressed,
   });
 
   final double price;
-  final String title, subTitle;
-  final VoidCallback press;
+  final int quantity;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isInCart = quantity > 0;
+    final title = isInCart ? "Update Cart" : "Add to Cart";
+    final subTitle = "Unit price";
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: ConstantValues.defaultPadding, vertical: 6 / 2),
+          horizontal: ConstantValues.defaultPadding,
+          vertical: 3,
+        ),
         child: SizedBox(
           height: 64,
           child: Material(
-            color: Colors.grey,
+            color: theme.primaryColor,
             clipBehavior: Clip.hardEdge,
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(6),
-              ),
+              borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
             child: InkWell(
-              onTap: press,
+              onTap: onPressed,
               child: Row(
                 children: [
                   Expanded(
                     flex: 4,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: ConstantValues.defaultPadding),
+                        horizontal: ConstantValues.defaultPadding,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             "\$${price.toStringAsFixed(2)}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(color: Colors.white),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             subTitle,
                             style: const TextStyle(
-                                color: Colors.white54,
-                                fontWeight: FontWeight.w500),
-                          )
+                              color: Colors.white70,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -66,12 +72,20 @@ class CartButton extends StatelessWidget {
                       alignment: Alignment.center,
                       height: double.infinity,
                       color: Colors.black.withOpacity(0.15),
-                      child: Text(
-                        title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(color: Colors.white),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.shopping_cart_checkout,
+                              color: Colors.white, size: 18),
+                          const SizedBox(width: 6),
+                          Text(
+                            title,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -49,10 +49,10 @@ class BannerMStyle1 extends StatelessWidget {
                     FontWeight.w400,
                     'FontRegular'),
               ),
-              const SizedBox(
+               SizedBox(
                 width: 64,
                 child: Divider(
-                  color: Colors.white,
+                  color: Theme.of(context).canvasColor,
                   thickness: 2,
                 ),
               ),

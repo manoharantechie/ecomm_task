@@ -1,48 +1,61 @@
-import 'dart:convert';
-import 'package:e_comm/src/core/utills/const_value.dart';
-import 'package:e_comm/src/features/data/cart_list_model.dart';
-import 'package:e_comm/src/features/domain/api_utils.dart';
-import 'package:e_comm/src/features/domain/cubit/cart/cart_state.dart';
-import 'package:http/http.dart';
+import 'package:e_comm/src/features/data/product_model.dart';
+import 'package:e_comm/src/features/domain/db_service/cart_db_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:injectable/injectable.dart';
 
+part 'cart_state.dart';
 
+@injectable
 class CartCubit extends Cubit<CartState> {
-  CartCubit() : super(CartInit());
+  final CartDatabaseService cartDb;
 
+  CartCubit(this.cartDb) : super(CartInitial());
 
-  getCardsList() async {
-    CartsListModel output;
-
+  Future<void> loadCart() async {
     emit(CartLoading());
-
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    final Response response =
-    await get(Uri.parse(ConstantValues().baseURl + ApiUtils().cartsUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer ${preferences.getString("token")}"
-      },
-    );
-
     try {
-      output = CartsListModel.fromJson(jsonDecode(response.body));
-
-      if (output!= null || output!= "") {
-        emit(CartSucceed(response: output));
-
-      } else {
-
-        emit(CartFailed(message: "Response are missing"));
-      }
+      final items = await cartDb.readCartItems();
+      emit(CartLoaded(cartItems: items));
     } catch (e) {
-      print(e);
-      emit(CartFailed(message: e.toString()));
+      emit(CartError(message: 'Failed to load cart: ${e.toString()}'));
     }
-
   }
 
+  Future<void> addToCart(ProductDetails product) async {
+    await cartDb.addToCart(product);
+    await loadCart(); // Refresh state
+  }
 
+  Future<void> removeFromCart(int productId) async {
+    await cartDb.removeFromCart(productId);
+    await loadCart(); // Refresh state
+  }
+
+  Future<void> clearCart() async {
+    await cartDb.clearCart();
+    await loadCart(); // Refresh state
+  }
+
+  void decreaseQuantity(String productId) {
+    if (state is CartLoaded) {
+      final currentState = state as CartLoaded;
+      final updatedItems = currentState.cartItems.map((item) {
+        if (item['productId'] == productId) {
+          final currentCount = int.tryParse(item['count'].toString()) ?? 1;
+          if (currentCount > 1) {
+            return {
+              ...item,
+              'count': currentCount - 1,
+            };
+          }
+          // If count is 1, remove item
+          return null;
+        }
+        return item;
+      }).whereType<Map<String, dynamic>>().toList();
+
+      emit(CartLoaded(cartItems: updatedItems));
+    }
+  }
 
 }

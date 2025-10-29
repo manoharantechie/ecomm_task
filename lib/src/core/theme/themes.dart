@@ -12,7 +12,7 @@ class MyThemes {
       brightness: Brightness.light,
       disabledColor: const Color(0xFFF7931B),
       dialogBackgroundColor: const Color(0xFF1F1E1E),
-      canvasColor: const Color(0xFF5C5C5C),
+      canvasColor: const Color(0xFFFFFFFF),
       primaryColorLight: const Color(0xFF616161),
 
       cardColor: const Color(0xFFFFFFFF),

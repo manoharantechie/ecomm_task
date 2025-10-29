@@ -2,6 +2,7 @@ import 'package:e_comm/src/core/utills/const_value.dart';
 import 'package:e_comm/src/core/routes/route_path.dart';
 import 'package:e_comm/src/core/theme/custom_theme.dart';
 import 'package:e_comm/src/features/data/product_list_model.dart';
+import 'package:e_comm/src/features/domain/cubit/cart/cart_cubit.dart';
 import 'package:e_comm/src/features/domain/cubit/product/product_cubit.dart';
 import 'package:e_comm/src/features/domain/cubit/product/product_state.dart';
 import 'package:e_comm/src/features/presentation/widgets/carousel.dart';
@@ -27,6 +28,7 @@ class _DashScreenState extends State<DashScreen> {
     // TODO: implement initState
     super.initState();
     context.read<ProductCubit>().getProductList();
+    context.read<CartCubit>().loadCart();
   }
 
   @override
@@ -61,6 +63,78 @@ class _DashScreenState extends State<DashScreen> {
             return productViewUI(productsList);
           }
           return LoadingDialog.widget();
+        },
+      ),
+
+      bottomNavigationBar: BlocBuilder<CartCubit, CartState>(
+        builder: (context, state) {
+          if (state is CartLoaded && state.cartItems.isNotEmpty) {
+            int totalItems = 0;
+            double totalAmount = 0;
+
+            for (var item in state.cartItems) {
+              final count = int.tryParse(item['count'].toString()) ?? 0;
+              final price = double.tryParse(item['price'].toString()) ?? 0;
+              totalItems += count;
+              totalAmount += count * price;
+            }
+
+            return Container(
+              height: 100,
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Total items and amount
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Items: $totalItems',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        'Total: ₹${totalAmount.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Checkout button
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () {
+                      GoRouter.of(context).pushNamed(
+                        AppRoute.cart.name,
+                      );
+                    },
+                    child: Text(
+                      'Checkout',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return SizedBox.shrink(); // Hide if cart is empty
         },
       ),
     );
@@ -160,6 +234,7 @@ class _DashScreenState extends State<DashScreen> {
                 );
               },
             ),
+
           ],
         ),
       ),

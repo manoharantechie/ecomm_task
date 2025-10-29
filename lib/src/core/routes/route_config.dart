@@ -2,6 +2,7 @@ import 'package:e_comm/src/core/routes/route_path.dart';
 import 'package:e_comm/src/features/data/product_list_model.dart';
 import 'package:e_comm/src/features/presentation/pages/dash_screen.dart';
 import 'package:e_comm/src/features/presentation/pages/home_screen.dart';
+import 'package:e_comm/src/features/presentation/pages/product/cart_screen.dart';
 import 'package:e_comm/src/features/presentation/pages/product/product_details_screen.dart';
 import 'package:e_comm/src/features/presentation/pages/product/product_list_screen.dart';
 import 'package:e_comm/src/features/presentation/pages/splash_screen.dart';
@@ -40,7 +41,11 @@ class AppRouteConf {
         name: AppRoute.productlist.name,
         builder: (_, __) => ProductListScreen(),
       ),
-
+      GoRoute(
+        path: AppRoute.cart.path,
+        name: AppRoute.cart.name,
+        builder: (_, __) => CartPage(),
+      ),
       GoRoute(
           path: AppRoute.productdetails.path,
           name: AppRoute.productdetails.name,

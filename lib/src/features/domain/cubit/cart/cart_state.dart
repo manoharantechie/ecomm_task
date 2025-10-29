@@ -1,41 +1,19 @@
-import 'package:e_comm/src/features/data/cart_list_model.dart';
-import 'package:e_comm/src/features/data/product_list_model.dart';
-import 'package:equatable/equatable.dart';
+part of 'cart_cubit.dart';
 
+abstract class CartState {}
 
-abstract class CartState extends Equatable {}
+class CartInitial extends CartState {}
 
-class CartInit extends CartState {
-  @override
-  List<Object> get props => [];
+class CartLoading extends CartState {}
+
+class CartLoaded extends CartState {
+  final List<Map<String, dynamic>> cartItems;
+
+  CartLoaded({required this.cartItems});
 }
 
-
-class CartLoading extends CartState {
-  @override
-  // List<Object?> get props => throw UnimplementedError();
-
-  List<Object?> get props => [];
-
-}
-
-class CartSucceed extends CartState {
-  CartSucceed({required this.response});
-
-  final CartsListModel response;
-
-  @override
-  List<Object> get props => [response];
-}
-
-
-class CartFailed extends CartState {
-
-  CartFailed({required this.message});
-
+class CartError extends CartState {
   final String message;
 
-  @override
-  List<Object> get props => [message];
+  CartError({required this.message});
 }
-
